@@ -1,0 +1,67 @@
+﻿
+@model DataKendaraan.Models.Vehicle
+@{
+    ViewBag.Title = "Detail";
+}
+
+
+<h2><img src="~/images/folder-icon.svg" alt="Sample Image" class="img me-3" width="50" height="50">Aplikasi Data Kendaraan</h2>
+<b class="mx-2">Detail Data Kendaraan</b>
+
+
+@using (Html.BeginForm("AddOrEdit", "Vehicle", FormMethod.Post, new { onSubmit = "return SubmitForm(this)" }))
+{
+@Html.HiddenFor(model => model.Id)
+<div class="container mt-4">
+    <div class="row">
+        <div class="form-group col">
+            <label for="RegistrationVehicleNumber" class="form-label"><h5>No. Registrasi Kendaraan</h5></label>
+            @Html.EditorFor(model => model.RegistrationVehicleNumber, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled="disabled" } })
+            @Html.ValidationMessageFor(model => model.RegistrationVehicleNumber)
+        </div>
+
+        <div class="form-group col">
+            <label for="ProductionYear" class="form-label"><h5>Tahun Pembuatan</h5></label>
+            @Html.EditorFor(model => model.ProductionYear, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled = "disabled" } })
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col">
+            <label for="OwnerName" class="form-label"><h5>Nama Pemilik</h5></label>
+            @Html.EditorFor(model => model.OwnerName, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled = "disabled" } })
+            @Html.ValidationMessageFor(model => model.OwnerName)
+        </div>
+
+        <div class="form-group col">
+            <label for="CylinderCapacity" class="form-label"><h5>Kapasitas Silinder</h5></label>
+            @Html.EditorFor(model => model.CylinderCapacity, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled = "disabled" } })
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col">
+            <label for="Brand" class="form-label"><h5>Merk Kendaraan</h5></label>
+            @Html.EditorFor(model => model.Brand, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled = "disabled" } })
+        </div>
+
+        <div class="form-group col">
+            <label for="VehicleColor" class="form-label"><h5>Warna</h5></label>
+            @Html.EditorFor(model => model.VehicleColor, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled = "disabled" } })
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col">
+            <label for="Address" class="form-label"><h5>Alamat Pemilik Kendaraan</h5></label>
+            @Html.TextAreaFor(model => model.Address, new { @class = "form-control", rows = "4", @readonly = "readonly", @disabled = "disabled" })
+        </div>
+        <div class="form-group col">
+            <label for="Address" class="form-label"><h5>Bahan Bakar</h5></label>
+            @Html.EditorFor(model => model.Fuel, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @disabled = "disabled" } })
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <a href="/Vehicle/Index" class="btn btn-primary mt-3">Kembali</a>
+</div>
+}
+
+

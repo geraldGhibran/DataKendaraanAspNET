@@ -1,0 +1,228 @@
+﻿
+@{
+    ViewBag.Title = "Vehicle List";
+
+
+
+}
+
+
+<h2><img src="~/images/folder-icon.svg" alt="Sample Image" class="img me-3" width="50" height="50">Aplikasi Data Kendaraan</h2>
+
+
+<div class="row mb-3">
+    <div class="card bg-warning">
+        <div class="mb-3 mt-3">
+            <label for="numberRegistrationSearch" class="form-label"><h5>No. Registrasi</h5></label>
+            <input type="text" id="numberRegistrationSearch" class="form-control w-25">
+        </div>
+        <div class="mb-3">
+            <label for="ownerNameSearch" class="form-label"><h5>Nama Pemilik</h5></label>
+            <input type="text" id="ownerNameSearch" class="form-control w-25">
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-end">
+    <div class="col-1 w-auto" >
+        <button id="searchButton" class="btn btn-primary mb-3 me-1">Search</button><a class="btn btn-success mb-3" onclick="PopUpForm('@Url.Action("AddOrEdit", "Vehicle")')">Add</a>
+    </div>
+</div>
+
+<table id="vehicleTable" class="table table-striped table-bordered" style="width:100%;">
+    <thead class="table-primary text-center">
+        <tr>
+            <th>Nomor Registrasi Kendaraan</th>
+            <th>Nama Pemilik</th>
+            <th>Merk Kendaraan</th>
+            <th>Tahun Pembuatan</th>
+            <th>Kapasitas Silinder</th>
+            <th >Warna Kendaraan</th>
+            <th>Bahan Bakar</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+</table>
+
+<link href="https://cdn.datatables.net/2.3.0/css/dataTables.bootstrap5.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/fontawesome.min.css" rel="stylesheet" />
+
+@section scripts {
+    <script src="//cdn.datatables.net/2.3.0/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.bootstrap5.js"></script>
+
+    <script>
+        var Popup, dataTable;
+        $(document).ready(function () {
+            dataTable = $("#vehicleTable").DataTable({
+                "ajax": {
+                    "url": "/Vehicle/GetData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "RegistrationVehicleNumber" },
+                    { "data": "OwnerName" },
+                    { "data": "Brand" },
+                    { "data": "ProductionYear" },
+                    {
+                        "data": "CylinderCapacity",
+                        "render": function (data, type) {
+                            if (type === 'display') {
+                                return `${data} cc`;
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        "data": "VehicleColor",
+                    },
+                    {"data": "Fuel"},
+                    {
+                        "data": "Id",
+                        "render": function (data, type, row) {
+                            return `
+                                <a class='btn btn-info btn-sm me-1' href='@Url.Action("Detail", "Vehicle")/${data}'>Detail</a>
+                                <a class='btn btn-warning btn-sm' onclick="PopUpForm('@Url.Action("AddOrEdit", "Vehicle")/${data}')">Edit</a>
+                                <a class='btn btn-danger btn-sm ms-1' onclick="Delete(${data}, '${row.RegistrationVehicleNumber}')">Delete</a>
+                            `;
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "200px"
+                    }
+                ],
+                //"createdRow": function (row, data) {
+                //    if (data.VehicleColor.toLowerCase() === "merah") {
+                //        $(row).find('td').css('background-color', '#ffdddd');
+                //    }
+                //},
+                "language": {
+                    "emptyTable": "No data found, Please clock on <b> Add New </b> Button"
+                },
+                dom: '<"top"l>rt<"bottom"ip>',
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Search records..."
+                },
+                search: {
+                    return: true
+                },
+                paging: false,
+
+
+
+
+            });
+
+            $('#searchButton').click(function () {
+                var numberValue = $('#numberRegistrationSearch').val().trim();
+                var ownValue = $('#ownerNameSearch').val().trim();
+
+                dataTable.search('').columns().search('').draw();
+
+                if (numberValue) {
+                    dataTable.column(0).search(numberValue);
+                }
+
+                if (ownValue) {
+                    dataTable.column(1).search(ownValue);
+                }
+
+                dataTable.draw();
+            });
+        });
+
+
+
+        function PopUpForm(url) {
+            var formDiv = $('<div/>');
+
+            var hasNumber = /\d/.test(url);
+            var dialogTitle = hasNumber ? 'Edit Kendaraan' : 'Tambah Kendaraan';
+
+            $.get(url)
+                .done(function (response) {
+                    formDiv.html(response);
+
+                    Popup = formDiv.dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        title: dialogTitle,  
+                        height: 600,
+                        width: 900,
+                        close: function () {
+                            Popup.dialog('destroy').remove();
+                        },
+                        open: function () {
+                            $('.ui-dialog-titlebar-close').html('<span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>')
+                                .css({
+                                    'background': 'none',
+                                    'border': 'none',
+                                    'color': '#777'
+                                });
+                        }
+                    });
+                });
+        }
+
+        function resetAndClose() {
+            // Reset the form
+            $('form')[0].reset();
+
+            // Close the dialog
+            if (typeof Popup !== 'undefined' && Popup.dialog('isOpen')) {
+                Popup.dialog('close');
+            }
+        }
+
+        function SubmitForm(form) {
+            $.validator.unobtrusive.parse(form);
+            if ($(form).valid()){
+                $.ajax({
+                    type: "POST",
+                    url: form.action,
+                    data: $(form).serialize(),
+                    success: function (data) {
+                        if (data.success)
+                        {
+                            Popup.dialog('close');
+                            dataTable.ajax.reload();
+
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+
+                        }
+                    }
+                });
+            }
+            return false;
+        }
+
+        function Delete(id, registrationNumber) {
+            if (confirm(`Anda yakin menghapus data ${registrationNumber} ?`))
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Delete", "Vehicle")/' + id,
+                    success: function (data) {
+                        if (data.success)
+                        {
+                            dataTable.ajax.reload();
+
+                            $.notify(data.message, {
+                                globalPosition: "top center",
+                                className: "success"
+                            })
+
+                        }
+                    }
+                })
+            }
+        }
+
+
+    </script>
+}

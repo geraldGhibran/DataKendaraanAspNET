@@ -1,0 +1,100 @@
+﻿@model DataKendaraan.Models.Vehicle
+
+@{
+    Layout = null;
+}
+
+
+
+@using (Html.BeginForm("AddOrEdit", "Vehicle", FormMethod.Post, new { onSubmit = "return SubmitForm(this)" }))
+{
+    @Html.HiddenFor(model => model.Id)
+    <div class="container mt-4">
+        <div class="row mb-3">
+            <div class="form-group col">
+                <label for="RegistrationVehicleNumber" class="form-label"><h5>No. Registrasi Kendaraan</h5></label>
+                @Html.EditorFor(model => model.RegistrationVehicleNumber, new { htmlAttributes = new { @class = "form-control", } })
+                @Html.ValidationMessageFor(model => model.RegistrationVehicleNumber)
+            </div>
+
+            <div class="form-group col">
+                <label for="ProductionYear" class="form-label"><h5>Tahun Pembuatan</h5></label>
+                @Html.EditorFor(model => model.ProductionYear, new { htmlAttributes = new { @class = "form-control"} })
+                @Html.ValidationMessageFor(model => model.ProductionYear)
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="form-group col">
+                <label for="OwnerName" class="form-label"><h5>Nama Pemilik</h5></label>
+                @Html.EditorFor(model => model.OwnerName, new { htmlAttributes = new { @class = "form-control", } })
+                @Html.ValidationMessageFor(model => model.OwnerName)
+            </div>
+
+            <div class="form-group col">
+                <label for="CylinderCapacity" class="form-label"><h5>Kapasitas Silinder</h5></label>
+                @Html.EditorFor(model => model.CylinderCapacity, new { htmlAttributes = new { @class = "form-control", } })
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="form-group col">
+                <label for="Brand" class="form-label"><h5>Merk Kendaraan</h5></label>
+                @Html.EditorFor(model => model.Brand, new { htmlAttributes = new { @class = "form-control", } })
+            </div>
+
+            <div class="form-group col">
+                <label for="VehicleColor" class="form-label"><h5>Warna</h5></label>
+                @if (Model.Id != null)
+                {
+                    @Html.DropDownListFor(model => model.VehicleColor,
+                        new SelectList(
+                            new List<SelectListItem>
+                            {
+                                new SelectListItem { Text = "Merah", Value = "Merah" },
+                                new SelectListItem { Text = "Hitam", Value = "Hitam" },
+                                new SelectListItem { Text = "Biru", Value = "Biru" },
+                                new SelectListItem { Text = "Abu-abu", Value = "Abu-abu" }
+                            },
+                            "Value",
+                            "Text",
+                            Model.VehicleColor),
+                        new { @class = "form-control" })
+                }
+                else
+                {
+                    @Html.DropDownListFor(model => model.VehicleColor,
+                        new SelectList(
+                            new List<SelectListItem>
+                            {
+                                new SelectListItem { Text = "Pilih Warna...", Value = "" },
+                                new SelectListItem { Text = "Merah", Value = "Merah" },
+                                new SelectListItem { Text = "Hitam", Value = "Hitam" },
+                                new SelectListItem { Text = "Biru", Value = "Biru" },
+                                new SelectListItem { Text = "Abu-abu", Value = "Abu-abu" }
+                            },
+                            "Value",
+                            "Text"),
+                        new { @class = "form-control" })
+                }
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="form-group col">
+                <label for="Address" class="form-label"><h5>Alamat Pemilik Kendaraan</h5></label>
+                @Html.TextAreaFor(model => model.Address, new { @class = "form-control", rows = "4", })
+            </div>
+            <div class="form-group col">
+                <label for="Fuel" class="form-label"><h5>Bahan Bakar</h5></label>
+                @Html.EditorFor(model => model.Fuel, new { htmlAttributes = new { @class = "form-control", } })
+            </div>
+        </div>
+        <div class="row mt-4 ">
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+                <input type="reset" value="Kembali" class="btn btn-secondary" onclick="resetAndClose()"  />
+            </div>
+
+        </div>
+    </div>
+
+
+}
